@@ -1,0 +1,18 @@
+version: "3"
+services:
+  db:
+    restart: on-failure:10
+    image: postgres:10.4
+    volumes:
+      - "processengine-postgres-db-volume:/var/lib/postgresql/data"
+  web:
+    restart: on-failure:10
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+
+volumes:
+  processengine-postgres-db-volume:
