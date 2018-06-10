@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
-
+from django.template import Template, Context
+import json
 '''
 Other runners we might have:
 - openwhisk
@@ -34,9 +35,12 @@ class RegisteredTask(models.Model):
     Registered tasks are tasks that are available.
     Registered tasks attacked to a ProcessDefinition are used to
     '''
-    service = models.TextField(blank=True, null=True, help_text='This is downstream service to call')
-    name = models.TextField(blank=True, null=True, help_text='This is the formal name of the test that will be called')
-    friendly_name = models.TextField(blank=True, null=True)
+    def __str__(self):
+        return "{}.{}".format(self.service, self.name)
+
+    service = models.CharField(max_length=255, blank=True, null=True, help_text='This is downstream service to call')
+    name = models.CharField(max_length=255, blank=True, null=True, help_text='This is the formal name of the test that will be called')
+    friendly_name = models.CharField(max_length=255, blank=True, null=True)
     registered_runners = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='A list of the runners available for this task')
     production_status = models.CharField(max_length=10, choices=REGISTERED_TASK_STATUSES, default='alpha')
 
@@ -51,8 +55,8 @@ class ProcessDefinition(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=50)
     docs = models.TextField(blank=True, null=True, help_text='Markdown is supported')
-    example_payload = JSONField(default={})
-    example_response = JSONField(default={})
+    example_payload = JSONField(default={}, blank=True, null=True)
+    example_response = JSONField(default={}, blank=True, null=True)
     is_live = models.BooleanField(default=False, help_text='Whether or not this process is publically available')
 
     tasks = models.ManyToManyField(RegisteredTask, through='ProcessTask')
@@ -67,7 +71,7 @@ class ProcessTask(models.Model):
     process_definition = models.ForeignKey(ProcessDefinition, on_delete=models.CASCADE)
     registered_task = models.ForeignKey(RegisteredTask, on_delete=models.SET_NULL, null=True)
 
-    runner = models.CharField(max_length=10, choices=TASK_RUNNERS)
+    runner = models.CharField(max_length=50, choices=TASK_RUNNERS)
     run_immediately = models.BooleanField(default=True, help_text='Will run this task immediately and include the result in the response to the upstream process')
     is_async = models.BooleanField(default=False, help_text='Run this task in the background (Response is not returned in realtime)')
 
@@ -77,13 +81,11 @@ class ProcessTask(models.Model):
     schedule_offset_from_now = models.PositiveIntegerField(default=0, help_text='Offset in seconds from now', db_index=True)
     schedule_offset_from_field = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='A tuple in the format: ["payload.object.date_created", "60"]')
 
+
 class Process(models.Model):
     '''
     POST /process/:version/ --data-binary '{ "name": ..., payload: {} }'
     '''
-
-    def __str__(self):
-        return 'Settings for Practitioner #{}'.format(self.practitioner_id)
 
     owners = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='object keys for objects that are allowed to act on this process')
     object_ids = ArrayField(models.CharField(max_length=100), default=[], db_index=True)
@@ -94,19 +96,27 @@ class Process(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_date = models.DateTimeField(auto_now=True, db_index=True)
 
+    @classmethod
+    def from_definition(cls, definition, owners, payload, task_payload_templates = {}, object_ids=[], with_save=True):
+        instance = cls()
+        instance.owners = owners
+        instance.object_ids = owners
+        instance.definition = definition
+        instance.payload = payload
+        if with_save: instance.save()
+
+        for task in definition.tasks.all():
+            template = task_payload_templates.get(task.name)
+            task = Task.from_registered_task(instance, task, template)
+
+        return instance
+
+
     def run(self):
         '''
         Run all pending downstream tasks
         '''
         pass
-
-    def on_create(self):
-        '''
-        Prepare and run all downstream tasks
-        '''
-        registered_tasks = self.definition.registered_tasks
-        for registered_task in registered_tasks:
-            Task.from_registered_task(task)
 
 
 class Task(models.Model):
@@ -137,8 +147,21 @@ class Task(models.Model):
         pass
 
     @classmethod
-    def from_registered_task(self):
-        pass
+    def from_registered_task(cls, process, task_definition, template, with_save=True, **config):
+        instance = cls()
+        instance.process = process
+        instance.definition = task_definition
+
+        template = Template(json.dumps(template))
+        rendered_payload = template.render(context=Context(process.payload))
+
+        instance.payload = json.loads(rendered_payload)
+        for key,value in config.items():
+            setattr(instance, key, value)
+        if with_save:
+            instance.save()
+        return instance
+
 
 class Result(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)

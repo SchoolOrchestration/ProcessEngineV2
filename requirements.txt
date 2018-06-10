@@ -5,3 +5,6 @@ psycopg2
 requests
 django-storages
 boto
+
+ipdb
+ipython
