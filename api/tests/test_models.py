@@ -2,48 +2,29 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from ..models import (
-    Process,
-    Task,
-    ProcessTask
-)
-from .testutils import (
-    create_fake_definition,
-    create_fake_registered_task
-)
+from .testutils import create_test_process_instance
+import responses
 
 class ProcessTestCase(TestCase):
 
     def setUp(self):
-        self.definition = create_fake_definition()
-        self.registered_task = create_fake_registered_task("localhost", "ping")
+        self.process = create_test_process_instance()
 
-        ProcessTask.objects.create(
-            process_definition = self.definition,
-            registered_task = self.registered_task,
-            payload_template = '{"foo.bar": "{{foo.bar}}'
-        )
-
-        payload = {
-            "foo": {
-                "bar": "hello!"
-            }
-        }
-        task_payload_templates = {
-            "ping": {
-                "message": "{{foo.bar}}"
-            }
-        }
-        self.process = Process.from_definition(
-            self.definition,
-            owners=['1'],
-            payload=payload,
-            task_payload_templates=task_payload_templates
-        )
-
-    def test_payload_is_correctly_parse(self):
+    def test_payload_is_correctly_parsed(self):
         task = self.process.task_set.first()
+        assert task.payload.get("foo.bar") == "hello!"
+
+    @responses.activate
+    def test_run_process(self):
+
+        responses.add(
+            responses.POST,
+            'http://web/tasks/',
+            json={'message': 'pong'},
+            status=201
+        )
+
+        process = self.process.run()
         import ipdb;ipdb.set_trace()
-        assert task.payload.get("message") == "hello!"
 
 

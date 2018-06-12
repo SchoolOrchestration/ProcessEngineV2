@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.template import Template, Context
-import json
+import json, requests
 '''
 Other runners we might have:
 - openwhisk
@@ -105,18 +105,21 @@ class Process(models.Model):
         instance.payload = payload
         if with_save: instance.save()
 
-        for task in definition.tasks.all():
-            template = task_payload_templates.get(task.name)
-            task = Task.from_registered_task(instance, task, template)
+        for task in definition.processtask_set.all():
+            task = Task.from_process_task(instance, task)
 
         return instance
 
 
-    def run(self):
+    def run(self, force = False):
         '''
         Run all pending downstream tasks
+        Use force to re-run/force-run all downstream methods
         '''
-        pass
+        for task in self.task_set.all():
+            task.run()
+
+        return self
 
 
 class Task(models.Model):
@@ -140,19 +143,28 @@ class Task(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_date = models.DateTimeField(auto_now=True, db_index=True)
 
-    def call(self):
+    def run(self):
         """
         result = tasks.runners.call(self.runner, self.service, self.task, self.payload)
         """
-        pass
+        url = "http://{}/tasks/".format(self.service)
+        data = {
+            "task": self.method_name,
+            "payload": self.payload
+        }
+        result = requests.post(url, data)
+        Result.from_run_result(self, result)
+        return result
 
     @classmethod
-    def from_registered_task(cls, process, task_definition, template, with_save=True, **config):
+    def from_process_task(cls, process, task_template, with_save=True, **config):
         instance = cls()
         instance.process = process
-        instance.definition = task_definition
+        instance.definition = task_template.registered_task
+        instance.service = task_template.registered_task.service
+        instance.method_name = task_template.registered_task.name
 
-        template = Template(json.dumps(template))
+        template = Template(task_template.payload_template)
         rendered_payload = template.render(context=Context(process.payload))
 
         instance.payload = json.loads(rendered_payload)
@@ -168,3 +180,14 @@ class Result(models.Model):
     response = JSONField(default={})
     response_code = models.CharField(max_length=10, default='0')
     is_success_response = models.BooleanField(default=False)
+
+    @classmethod
+    def from_run_result(cls, task, result, with_save=True):
+        instance = cls()
+        instance.task = task
+        instance.is_success_response = result.status_code < 300
+        instance.response = result.json()
+        instance.response_code = result.status_code
+
+        if with_save: instance.save()
+        return instance
