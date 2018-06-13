@@ -1,31 +1,36 @@
+'''
+Main API
+'''
 from django.contrib.auth.models import User
 from django.conf import settings
-from rest_framework import routers, serializers, viewsets, response
-import importlib
+from rest_framework import routers, viewsets, response
 
-def call_method_from_string(method_string, payload = None):
-    '''
-    given a string path, call the method
-    '''
-    parts = method_string.split('.') # qualified method: e.g.: api.tasks.ping
-    method_to_call = parts.pop()
-    module_string = ('.').join(parts)
-    module = importlib.import_module(module_string)
-    func = getattr(module, method_to_call)
-    return func(payload)
+from .helpers import (
+    get_tasks_by_module_string,
+    call_method_from_string
+)
+from .serializers import (
+    ProcessSerializer,
+    ProcessDefinitionSerializer,
+    RegisteredTaskSerializer
+)
+from .models import (
+    Process,
+    ProcessDefinition,
+    RegisteredTask
+)
 
-def get_tasks_by_module_string(module_string):
-    module = importlib.import_module(module_string)
-    tasks = []
-    for method_string in dir(module):
-        method = getattr(module, method_string)
-        if callable(method):
-            tasks.append({
-                "name": method_string,
-                "docs": method.__doc__
-            })
-    return tasks
+class ProcessDefinitionViewSet(viewsets.ModelViewSet):
+    serializer_class = ProcessDefinitionSerializer
+    queryset = ProcessDefinition.objects.all()
 
+class RegisteredTaskViewSet(viewsets.ModelViewSet):
+    serializer_class = RegisteredTaskSerializer
+    queryset = RegisteredTask.objects.all()
+
+class ProcessViewSet(viewsets.ModelViewSet):
+    serializer_class = ProcessSerializer
+    queryset = Process.objects.all()
 
 class TaskViewSet(viewsets.ViewSet):
     """
@@ -55,3 +60,5 @@ class TaskViewSet(viewsets.ViewSet):
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet, base_name='task')
+router.register(r'process-definitions', ProcessDefinitionViewSet)
+router.register(r'registered-tasks', RegisteredTaskViewSet)

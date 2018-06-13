@@ -43,6 +43,9 @@ class RegisteredTask(models.Model):
     friendly_name = models.CharField(max_length=255, blank=True, null=True)
     registered_runners = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='A list of the runners available for this task')
     production_status = models.CharField(max_length=10, choices=REGISTERED_TASK_STATUSES, default='alpha')
+    docs = models.TextField(blank=True, null=True, help_text='Markdown is supported')
+    example_payload = JSONField(default={}, blank=True, null=True)
+    example_response = JSONField(default={}, blank=True, null=True)
 
 class ProcessDefinition(models.Model):
     '''
@@ -120,7 +123,6 @@ class Process(models.Model):
             task.run()
 
         return self
-
 
 class Task(models.Model):
     '''
