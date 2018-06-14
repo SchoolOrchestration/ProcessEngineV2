@@ -206,8 +206,8 @@ class Result(models.Model):
         instance.is_success_response = result.ok
         if result.ok:
             instance.response = result.json()
-        else:
-            instance.response = result.content
+        # else:
+        #     instance.response = result.content
         instance.response_code = result.status_code
 
         if with_save: instance.save()
