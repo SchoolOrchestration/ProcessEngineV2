@@ -10,6 +10,7 @@ requests
 responses
 ipdb
 ipython
-
+coreapi
+openapi_codec
 # temp:
 django-cors-headers

@@ -32,8 +32,11 @@
             <blockquote class='blockquote pa-2' >{{activeProcess.docs}}</blockquote>
             <v-subheader>Example Request</v-subheader>
             <code class='block pa-2'>
-url = {{processEngineUrl}}/process/{{activeProcess.slug}}/
-data = {{activeProcess.example_payload}}
+url = '{{processEngineUrl}}/process/'
+data = {
+  name: '{{activeProcess.name}}',
+  payload: {{activeProcess.example_payload}}
+}
 result = requests.post(url, data)
             </code>
             <v-subheader>Example Response</v-subheader>

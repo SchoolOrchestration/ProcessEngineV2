@@ -20,6 +20,9 @@ def make_http_request(payload):
     pass
 
 def slack_message(payload):
+    """
+    Send a message in slack
+    """
     pass
 
 def ping(payload):

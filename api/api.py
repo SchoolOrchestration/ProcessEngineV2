@@ -32,6 +32,14 @@ class ProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessSerializer
     queryset = Process.objects.all()
 
+    def create(self, validated_data):
+        name = validated_data.get('name')
+        definition = ProcessDefinition.objects.get(name=name)
+        process = Process.from_definition(definition)
+        process.run()
+
+        return ProcessSerializer(process).data
+
 class TaskViewSet(viewsets.ViewSet):
     """
     Viewset for upstream microservices which exposes tasks
@@ -62,3 +70,4 @@ router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet, base_name='task')
 router.register(r'process-definitions', ProcessDefinitionViewSet)
 router.register(r'registered-tasks', RegisteredTaskViewSet)
+router.register(r'process', ProcessViewSet)

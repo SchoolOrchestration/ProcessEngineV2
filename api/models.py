@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.template import Template, Context
 import json, requests
+
+from .tasks.runners import call
 '''
 Other runners we might have:
 - openwhisk
@@ -12,8 +14,8 @@ Other runners we might have:
 - ...
 '''
 TASK_RUNNERS = [
-    ('api.tasks.http_task_runner', 'Trigger a task over HTTP'),
-    ('api.tasks.local_task_runner', 'Call a locally available task'),
+    ('api.tasks.runners.http_task_runner', 'Trigger a task over HTTP'),
+    ('api.tasks.runners.local_task_runner', 'Call a locally available task'),
 ]
 
 TASK_STATUSES = [
@@ -29,6 +31,16 @@ REGISTERED_TASK_STATUSES = [
     ('beta', 'beta'),
     ('stable', 'stable'),
 ]
+
+class RegisteredService(models.Model):
+    '''
+    Registered services represent services connected to this process engine
+    Exposed tasks from registered services can be discovered and made into
+    registered tasks for this process engine
+    '''
+    name = models.CharField(max_length=255, help_text='This is the formal name of the test that will be called')
+    base_url = models.URLField(blank=True, null=True, help_text='The internal base url where this service can be found')
+    channel = models.CharField(max_length=255, blank=True, null=True, help_text='A channel on which this service is listening')
 
 class RegisteredTask(models.Model):
     '''
@@ -74,7 +86,7 @@ class ProcessTask(models.Model):
     process_definition = models.ForeignKey(ProcessDefinition, on_delete=models.CASCADE)
     registered_task = models.ForeignKey(RegisteredTask, on_delete=models.SET_NULL, null=True)
 
-    runner = models.CharField(max_length=50, choices=TASK_RUNNERS)
+    runner = models.CharField(max_length=50, choices=TASK_RUNNERS, default='api.tasks.runners.http_task_runner')
     run_immediately = models.BooleanField(default=True, help_text='Will run this task immediately and include the result in the response to the upstream process')
     is_async = models.BooleanField(default=False, help_text='Run this task in the background (Response is not returned in realtime)')
 
@@ -100,7 +112,7 @@ class Process(models.Model):
     modified_date = models.DateTimeField(auto_now=True, db_index=True)
 
     @classmethod
-    def from_definition(cls, definition, owners, payload, task_payload_templates = {}, object_ids=[], with_save=True):
+    def from_definition(cls, definition, owners, payload, object_ids=[], with_save=True):
         instance = cls()
         instance.owners = owners
         instance.object_ids = owners
@@ -112,7 +124,6 @@ class Process(models.Model):
             task = Task.from_process_task(instance, task)
 
         return instance
-
 
     def run(self, force = False):
         '''
@@ -136,7 +147,7 @@ class Task(models.Model):
 
     payload = JSONField(default={})
 
-    runner = models.CharField(max_length=10, choices=TASK_RUNNERS)
+    runner = models.CharField(max_length=50, choices=TASK_RUNNERS)
     status = models.CharField(max_length=10, choices=TASK_STATUSES, default='N')
 
     run_immediately = models.BooleanField(default=True, help_text='Will run this task immediately and include the result in the response to the upstream process')
@@ -149,13 +160,17 @@ class Task(models.Model):
         """
         result = tasks.runners.call(self.runner, self.service, self.task, self.payload)
         """
-        url = "http://{}/tasks/".format(self.service)
-        data = {
-            "task": self.method_name,
-            "payload": self.payload
-        }
-        result = requests.post(url, data)
+        self.status = 'IP'
+        self.save()
+        (result, is_success) = call(self.runner, self)
+
+        if is_success:
+            self.status = 'C'
+        else:
+            self.status = 'F'
+        self.save()
         Result.from_run_result(self, result)
+
         return result
 
     @classmethod
@@ -165,6 +180,7 @@ class Task(models.Model):
         instance.definition = task_template.registered_task
         instance.service = task_template.registered_task.service
         instance.method_name = task_template.registered_task.name
+        instance.runner = task_template.runner
 
         template = Template(task_template.payload_template)
         rendered_payload = template.render(context=Context(process.payload))

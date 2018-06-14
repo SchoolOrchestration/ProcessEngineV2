@@ -25,6 +25,5 @@ class ProcessTestCase(TestCase):
         )
 
         process = self.process.run()
-        import ipdb;ipdb.set_trace()
 
 
