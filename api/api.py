@@ -4,6 +4,7 @@ Main API
 from django.contrib.auth.models import User
 from django.conf import settings
 from rest_framework import routers, viewsets, response
+import json
 
 from .helpers import (
     get_tasks_by_module_string,
@@ -32,13 +33,15 @@ class ProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessSerializer
     queryset = Process.objects.all()
 
-    def create(self, validated_data):
-        name = validated_data.get('name')
+    def create(self, request):
+        name = request.data.get('name')
+        payload = json.loads(request.data.get('payload', {}))
         definition = ProcessDefinition.objects.get(name=name)
-        process = Process.from_definition(definition)
+        process = Process.from_definition(definition, ["1"], payload)
+        import ipdb;ipdb.set_trace()
         process.run()
-
-        return ProcessSerializer(process).data
+        result = ProcessSerializer(process).data
+        return response.JSONResponse(result)
 
 class TaskViewSet(viewsets.ViewSet):
     """

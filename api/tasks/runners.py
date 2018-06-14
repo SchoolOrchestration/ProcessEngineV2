@@ -10,7 +10,7 @@ def http_task_runner(task):
         "task": task.method_name,
         "payload": task.payload
     }
-    result = requests.post(url, data)
+    result = requests.post(url, task.payload)
     success = result.status_code < 300
     return (result, success)
 

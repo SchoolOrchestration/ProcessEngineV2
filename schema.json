@@ -1,738 +1,626 @@
 {
-	"_type": "document",
-	"_meta": {
-		"url": "http://localhost:8000/schema/",
-		"title": "ProcessEngine"
+	"swagger": "2.0",
+	"info": {
+		"title": "ProcessEngine API",
+		"version": "v1"
 	},
-	"process": {
-		"list": {
-			"_type": "link",
-			"url": "/process/",
-			"action": "get"
-		},
-		"create": {
-			"_type": "link",
-			"url": "/process/",
-			"action": "post",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "owners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Owners",
-					"description": "object keys for objects that are allowed to act on this process"
-				}
-			}, {
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Payload",
-					"description": ""
-				}
-			}, {
-				"name": "definition",
-				"location": "form",
-				"schema": {
-					"_type": "integer",
-					"title": "Definition",
-					"description": ""
-				}
-			}]
-		},
-		"read": {
-			"_type": "link",
-			"url": "/process/{id}/",
-			"action": "get",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process."
-				}
-			}]
-		},
-		"update": {
-			"_type": "link",
-			"url": "/process/{id}/",
-			"action": "put",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process."
-				}
-			}, {
-				"name": "owners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Owners",
-					"description": "object keys for objects that are allowed to act on this process"
-				}
-			}, {
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Payload",
-					"description": ""
-				}
-			}, {
-				"name": "definition",
-				"location": "form",
-				"schema": {
-					"_type": "integer",
-					"title": "Definition",
-					"description": ""
-				}
-			}]
-		},
-		"partial_update": {
-			"_type": "link",
-			"url": "/process/{id}/",
-			"action": "patch",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process."
-				}
-			}, {
-				"name": "owners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Owners",
-					"description": "object keys for objects that are allowed to act on this process"
-				}
-			}, {
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Payload",
-					"description": ""
-				}
-			}, {
-				"name": "definition",
-				"location": "form",
-				"schema": {
-					"_type": "integer",
-					"title": "Definition",
-					"description": ""
-				}
-			}]
-		},
-		"delete": {
-			"_type": "link",
-			"url": "/process/{id}/",
-			"action": "delete",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process."
-				}
-			}]
+	"host": "localhost:8000",
+	"schemes": ["http"],
+	"basePath": "/",
+	"consumes": ["application/json"],
+	"produces": ["application/json"],
+	"securityDefinitions": {
+		"basic": {
+			"type": "basic"
 		}
 	},
-	"process-definitions": {
-		"list": {
-			"_type": "link",
-			"url": "/process-definitions/",
-			"action": "get"
+	"security": [{
+		"basic": []
+	}],
+	"paths": {
+		"/process-definitions/": {
+			"get": {
+				"operationId": "process-definitions_list",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/ProcessDefinition"
+							}
+						}
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"post": {
+				"operationId": "process-definitions_create",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/ProcessDefinition"
+					}
+				}],
+				"responses": {
+					"201": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/ProcessDefinition"
+						}
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"parameters": []
 		},
-		"create": {
-			"_type": "link",
-			"url": "/process-definitions/",
-			"action": "post",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "version",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Version",
-					"description": ""
-				}
-			}, {
-				"name": "name",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Name",
-					"description": ""
-				}
-			}, {
-				"name": "slug",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Slug",
-					"description": ""
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example response",
-					"description": ""
-				}
-			}, {
-				"name": "is_live",
-				"location": "form",
-				"schema": {
-					"_type": "boolean",
-					"title": "Is live",
-					"description": "Whether or not this process is publically available"
-				}
-			}]
-		},
-		"read": {
-			"_type": "link",
-			"url": "/process-definitions/{id}/",
-			"action": "get",
-			"fields": [{
+		"/process-definitions/{id}/": {
+			"get": {
+				"operationId": "process-definitions_read",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/ProcessDefinition"
+						}
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"put": {
+				"operationId": "process-definitions_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/ProcessDefinition"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/ProcessDefinition"
+						}
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"patch": {
+				"operationId": "process-definitions_partial_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/ProcessDefinition"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/ProcessDefinition"
+						}
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"delete": {
+				"operationId": "process-definitions_delete",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": ""
+					}
+				},
+				"tags": ["process-definitions"]
+			},
+			"parameters": [{
 				"name": "id",
+				"in": "path",
+				"description": "A unique integer value identifying this process definition.",
 				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process definition."
-				}
+				"type": "integer"
 			}]
 		},
-		"update": {
-			"_type": "link",
-			"url": "/process-definitions/{id}/",
-			"action": "put",
-			"encoding": "application/json",
-			"fields": [{
+		"/process/": {
+			"get": {
+				"operationId": "process_list",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Process"
+							}
+						}
+					}
+				},
+				"tags": ["process"]
+			},
+			"post": {
+				"operationId": "process_create",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Process"
+					}
+				}],
+				"responses": {
+					"201": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/Process"
+						}
+					}
+				},
+				"tags": ["process"]
+			},
+			"parameters": []
+		},
+		"/process/{id}/": {
+			"get": {
+				"operationId": "process_read",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/Process"
+						}
+					}
+				},
+				"tags": ["process"]
+			},
+			"put": {
+				"operationId": "process_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Process"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/Process"
+						}
+					}
+				},
+				"tags": ["process"]
+			},
+			"patch": {
+				"operationId": "process_partial_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Process"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/Process"
+						}
+					}
+				},
+				"tags": ["process"]
+			},
+			"delete": {
+				"operationId": "process_delete",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": ""
+					}
+				},
+				"tags": ["process"]
+			},
+			"parameters": [{
 				"name": "id",
+				"in": "path",
+				"description": "A unique integer value identifying this process.",
 				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process definition."
-				}
-			}, {
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "version",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Version",
-					"description": ""
-				}
-			}, {
-				"name": "name",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Name",
-					"description": ""
-				}
-			}, {
-				"name": "slug",
-				"required": true,
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Slug",
-					"description": ""
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example response",
-					"description": ""
-				}
-			}, {
-				"name": "is_live",
-				"location": "form",
-				"schema": {
-					"_type": "boolean",
-					"title": "Is live",
-					"description": "Whether or not this process is publically available"
-				}
+				"type": "integer"
 			}]
 		},
-		"partial_update": {
-			"_type": "link",
-			"url": "/process-definitions/{id}/",
-			"action": "patch",
-			"encoding": "application/json",
-			"fields": [{
+		"/registered-tasks/": {
+			"get": {
+				"operationId": "registered-tasks_list",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/RegisteredTask"
+							}
+						}
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"post": {
+				"operationId": "registered-tasks_create",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/RegisteredTask"
+					}
+				}],
+				"responses": {
+					"201": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/RegisteredTask"
+						}
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"parameters": []
+		},
+		"/registered-tasks/{id}/": {
+			"get": {
+				"operationId": "registered-tasks_read",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/RegisteredTask"
+						}
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"put": {
+				"operationId": "registered-tasks_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/RegisteredTask"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/RegisteredTask"
+						}
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"patch": {
+				"operationId": "registered-tasks_partial_update",
+				"description": "",
+				"parameters": [{
+					"name": "data",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/RegisteredTask"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "",
+						"schema": {
+							"$ref": "#/definitions/RegisteredTask"
+						}
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"delete": {
+				"operationId": "registered-tasks_delete",
+				"description": "",
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": ""
+					}
+				},
+				"tags": ["registered-tasks"]
+			},
+			"parameters": [{
 				"name": "id",
+				"in": "path",
+				"description": "A unique integer value identifying this registered task.",
 				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process definition."
-				}
-			}, {
-				"name": "object_ids",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Object ids",
-					"description": ""
-				}
-			}, {
-				"name": "version",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Version",
-					"description": ""
-				}
-			}, {
-				"name": "name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Name",
-					"description": ""
-				}
-			}, {
-				"name": "slug",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Slug",
-					"description": ""
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example response",
-					"description": ""
-				}
-			}, {
-				"name": "is_live",
-				"location": "form",
-				"schema": {
-					"_type": "boolean",
-					"title": "Is live",
-					"description": "Whether or not this process is publically available"
-				}
+				"type": "integer"
 			}]
 		},
-		"delete": {
-			"_type": "link",
-			"url": "/process-definitions/{id}/",
-			"action": "delete",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this process definition."
-				}
-			}]
+		"/tasks/": {
+			"get": {
+				"operationId": "tasks_list",
+				"description": "Viewset for upstream microservices which exposes tasks\nover API (not intended to be available outside the internal network)",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": ""
+					}
+				},
+				"tags": ["tasks"]
+			},
+			"post": {
+				"operationId": "tasks_create",
+				"description": "Create a task\n\nPOST /task/:method/ --data payload",
+				"parameters": [],
+				"responses": {
+					"201": {
+						"description": ""
+					}
+				},
+				"tags": ["tasks"]
+			},
+			"parameters": []
 		}
 	},
-	"registered-tasks": {
-		"list": {
-			"_type": "link",
-			"url": "/registered-tasks/",
-			"action": "get"
-		},
-		"create": {
-			"_type": "link",
-			"url": "/registered-tasks/",
-			"action": "post",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "service",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+	"definitions": {
+		"RegisteredTask": {
+			"title": "Registered task",
+			"type": "object",
+			"properties": {
+				"id": {
+					"title": "ID",
+					"type": "integer",
+					"readOnly": true
+				},
+				"service": {
 					"title": "Service",
-					"description": "This is downstream service to call"
-				}
-			}, {
-				"name": "name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"description": "This is downstream service to call",
+					"type": "string",
+					"maxLength": 255
+				},
+				"name": {
 					"title": "Name",
-					"description": "This is the formal name of the test that will be called"
-				}
-			}, {
-				"name": "friendly_name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"description": "This is the formal name of the test that will be called",
+					"type": "string",
+					"maxLength": 255
+				},
+				"friendly_name": {
 					"title": "Friendly name",
-					"description": ""
-				}
-			}, {
-				"name": "registered_runners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Registered runners",
-					"description": "A list of the runners available for this task"
-				}
-			}, {
-				"name": "production_status",
-				"location": "form",
-				"schema": {
-					"_type": "enum",
+					"type": "string",
+					"maxLength": 255
+				},
+				"registered_runners": {
+					"description": "A list of the runners available for this task",
+					"type": "array",
+					"items": {
+						"title": "Registered runners",
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					}
+				},
+				"production_status": {
 					"title": "Production status",
-					"description": "",
+					"type": "string",
 					"enum": ["alpha", "beta", "stable"]
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+				},
+				"docs": {
 					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"description": "Markdown is supported",
+					"type": "string"
+				},
+				"example_payload": {
 					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"type": "string"
+				},
+				"example_response": {
 					"title": "Example response",
-					"description": ""
+					"type": "string"
 				}
-			}]
+			},
+			"readOnly": true
 		},
-		"read": {
-			"_type": "link",
-			"url": "/registered-tasks/{id}/",
-			"action": "get",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
+		"ProcessTask": {
+			"required": ["process_definition"],
+			"type": "object",
+			"properties": {
+				"id": {
 					"title": "ID",
-					"description": "A unique integer value identifying this registered task."
+					"type": "integer",
+					"readOnly": true
+				},
+				"registered_task": {
+					"$ref": "#/definitions/RegisteredTask"
+				},
+				"runner": {
+					"title": "Runner",
+					"type": "string",
+					"enum": ["api.tasks.runners.http_task_runner", "api.tasks.runners.local_task_runner"]
+				},
+				"run_immediately": {
+					"title": "Run immediately",
+					"description": "Will run this task immediately and include the result in the response to the upstream process",
+					"type": "boolean"
+				},
+				"is_async": {
+					"title": "Is async",
+					"description": "Run this task in the background (Response is not returned in realtime)",
+					"type": "boolean"
+				},
+				"payload_template": {
+					"title": "Payload template",
+					"description": "A jinja/django template which will be parsed with the context from the parent process to create the payload for the task to be run",
+					"type": "string"
+				},
+				"schedule_offset_from_now": {
+					"title": "Schedule offset from now",
+					"description": "Offset in seconds from now",
+					"type": "integer",
+					"maximum": 2147483647,
+					"minimum": 0
+				},
+				"schedule_offset_from_field": {
+					"description": "A tuple in the format: [\"payload.object.date_created\", \"60\"]",
+					"type": "array",
+					"items": {
+						"title": "Schedule offset from field",
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					}
+				},
+				"process_definition": {
+					"title": "Process definition",
+					"type": "integer"
 				}
-			}]
+			}
 		},
-		"update": {
-			"_type": "link",
-			"url": "/registered-tasks/{id}/",
-			"action": "put",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
+		"ProcessDefinition": {
+			"required": ["version", "name", "slug"],
+			"type": "object",
+			"properties": {
+				"id": {
 					"title": "ID",
-					"description": "A unique integer value identifying this registered task."
-				}
-			}, {
-				"name": "service",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Service",
-					"description": "This is downstream service to call"
-				}
-			}, {
-				"name": "name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"type": "integer",
+					"readOnly": true
+				},
+				"tasks": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ProcessTask"
+					},
+					"readOnly": true
+				},
+				"object_ids": {
+					"type": "array",
+					"items": {
+						"title": "Object ids",
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					}
+				},
+				"version": {
+					"title": "Version",
+					"type": "string",
+					"maxLength": 10,
+					"minLength": 1
+				},
+				"name": {
 					"title": "Name",
-					"description": "This is the formal name of the test that will be called"
-				}
-			}, {
-				"name": "friendly_name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Friendly name",
-					"description": ""
-				}
-			}, {
-				"name": "registered_runners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Registered runners",
-					"description": "A list of the runners available for this task"
-				}
-			}, {
-				"name": "production_status",
-				"location": "form",
-				"schema": {
-					"_type": "enum",
-					"title": "Production status",
-					"description": "",
-					"enum": ["alpha", "beta", "stable"]
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"type": "string",
+					"maxLength": 255,
+					"minLength": 1
+				},
+				"slug": {
+					"title": "Slug",
+					"type": "string",
+					"format": "slug",
+					"pattern": "^[-a-zA-Z0-9_]+$",
+					"maxLength": 50,
+					"minLength": 1
+				},
+				"docs": {
 					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"description": "Markdown is supported",
+					"type": "string"
+				},
+				"example_payload": {
 					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
+					"type": "string"
+				},
+				"example_response": {
 					"title": "Example response",
-					"description": ""
+					"type": "string"
+				},
+				"is_live": {
+					"title": "Is live",
+					"description": "Whether or not this process is publically available",
+					"type": "boolean"
 				}
-			}]
+			}
 		},
-		"partial_update": {
-			"_type": "link",
-			"url": "/registered-tasks/{id}/",
-			"action": "patch",
-			"encoding": "application/json",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
+		"Process": {
+			"type": "object",
+			"properties": {
+				"id": {
 					"title": "ID",
-					"description": "A unique integer value identifying this registered task."
+					"type": "integer",
+					"readOnly": true
+				},
+				"owners": {
+					"description": "object keys for objects that are allowed to act on this process",
+					"type": "array",
+					"items": {
+						"title": "Owners",
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					}
+				},
+				"object_ids": {
+					"type": "array",
+					"items": {
+						"title": "Object ids",
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					}
+				},
+				"payload": {
+					"title": "Payload",
+					"type": "string"
+				},
+				"created_date": {
+					"title": "Created date",
+					"type": "string",
+					"format": "date-time",
+					"readOnly": true
+				},
+				"modified_date": {
+					"title": "Modified date",
+					"type": "string",
+					"format": "date-time",
+					"readOnly": true
+				},
+				"definition": {
+					"title": "Definition",
+					"type": "integer"
 				}
-			}, {
-				"name": "service",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Service",
-					"description": "This is downstream service to call"
-				}
-			}, {
-				"name": "name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Name",
-					"description": "This is the formal name of the test that will be called"
-				}
-			}, {
-				"name": "friendly_name",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Friendly name",
-					"description": ""
-				}
-			}, {
-				"name": "registered_runners",
-				"location": "form",
-				"schema": {
-					"_type": "array",
-					"title": "Registered runners",
-					"description": "A list of the runners available for this task"
-				}
-			}, {
-				"name": "production_status",
-				"location": "form",
-				"schema": {
-					"_type": "enum",
-					"title": "Production status",
-					"description": "",
-					"enum": ["alpha", "beta", "stable"]
-				}
-			}, {
-				"name": "docs",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Docs",
-					"description": "Markdown is supported"
-				}
-			}, {
-				"name": "example_payload",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example payload",
-					"description": ""
-				}
-			}, {
-				"name": "example_response",
-				"location": "form",
-				"schema": {
-					"_type": "string",
-					"title": "Example response",
-					"description": ""
-				}
-			}]
-		},
-		"delete": {
-			"_type": "link",
-			"url": "/registered-tasks/{id}/",
-			"action": "delete",
-			"fields": [{
-				"name": "id",
-				"required": true,
-				"location": "path",
-				"schema": {
-					"_type": "integer",
-					"title": "ID",
-					"description": "A unique integer value identifying this registered task."
-				}
-			}]
-		}
-	},
-	"tasks": {
-		"list": {
-			"_type": "link",
-			"url": "/tasks/",
-			"action": "get",
-			"description": "Viewset for upstream microservices which exposes tasks\nover API (not intended to be available outside the internal network)"
-		},
-		"create": {
-			"_type": "link",
-			"url": "/tasks/",
-			"action": "post",
-			"description": "Create a task\n\nPOST /task/:method/ --data payload"
+			}
 		}
 	}
 }

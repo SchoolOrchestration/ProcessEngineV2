@@ -12,5 +12,7 @@ ipdb
 ipython
 coreapi
 openapi_codec
+drf-yasg
+drf-yasg[validation]
 # temp:
 django-cors-headers

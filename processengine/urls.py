@@ -17,13 +17,29 @@ from django.contrib import admin
 from django.urls import path, include
 from api.api import router
 
-from rest_framework.schemas import get_schema_view
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
 
-schema_view = get_schema_view(title="ProcessEngine")
+schema_view = get_schema_view(
+   openapi.Info(
+      title="ProcessEngine API",
+      default_version='v1',
+    #   description="Test description",
+    #   terms_of_service="https://www.google.com/policies/terms/",
+    #   contact=openapi.Contact(email="tech@appointmentguru.co"),
+    #   license=openapi.License(name="MIT"),
+   ),
+   # validators=['flex', 'ssv'],
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('schema/', schema_view),
+    path(r'swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=None), name='schema-json'),
+    path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
+    path(r'redoc/', schema_view.with_ui('redoc', cache_timeout=None), name='schema-redoc'),
     path(r'', include(router.urls)),
     path(r'api-auth/', include('rest_framework.urls'))
 ]
