@@ -203,8 +203,11 @@ class Result(models.Model):
     def from_run_result(cls, task, result, with_save=True):
         instance = cls()
         instance.task = task
-        instance.is_success_response = result.status_code < 300
-        instance.response = result.json()
+        instance.is_success_response = result.ok
+        if result.ok:
+            instance.response = result.json()
+        else:
+            instance.response = result.content
         instance.response_code = result.status_code
 
         if with_save: instance.save()
