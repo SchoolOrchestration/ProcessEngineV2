@@ -3,7 +3,7 @@ from ..models import *
 def create_fake_registered_task(service, name):
     data = {
         "service": service,
-        "name": name,
+        "method_to_call": name,
         "friendly_name": name,
     }
     if data is not None:

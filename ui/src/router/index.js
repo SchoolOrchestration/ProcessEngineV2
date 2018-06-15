@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import ProcessPage from '@/components/pages/Processes'
 import RegisteredTasks from '@/components/pages/RegisteredTasks'
 import Discover from '@/components/pages/Discover'
+import Monitor from '@/components/pages/Monitor'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/discover',
       name: 'Discover',
       component: Discover
+    },
+    {
+      path: '/monitor',
+      name: 'Monitor',
+      component: Monitor
     }
   ]
 })

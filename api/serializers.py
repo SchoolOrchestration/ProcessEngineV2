@@ -6,7 +6,9 @@ from .models import (
     Process,
     ProcessDefinition,
     ProcessTask,
-    RegisteredTask
+    RegisteredTask,
+    Task,
+    Result
 )
 
 class RegisteredTaskSerializer(serializers.ModelSerializer):
@@ -25,14 +27,26 @@ class ProcessTaskSerializer(serializers.ModelSerializer):
 
 class ProcessDefinitionSerializer(serializers.ModelSerializer):
     """Simple serializer for professions"""
-    tasks = ProcessTaskSerializer(source='processtask_set', read_only=True, many=True)
+    task = ProcessTaskSerializer(source='processtask_set', read_only=True, many=True)
     class Meta:
         model = ProcessDefinition
         fields = '__all__'
 
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = '__all__'
+
+class TaskSerializer(serializers.ModelSerializer):
+    result_set = ResultSerializer(many=True, read_only=True)
+    class Meta:
+        model = Task
+        fields = '__all__'
 
 class ProcessSerializer(serializers.ModelSerializer):
     """Simple serializer for professions"""
+    task_set = TaskSerializer(many=True, read_only=True)
     class Meta:
         model = Process
         fields = '__all__'
+        depth = 1

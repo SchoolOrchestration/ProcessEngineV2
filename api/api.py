@@ -3,6 +3,7 @@ Main API
 '''
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from rest_framework import routers, viewsets, response
 import json
 
@@ -31,17 +32,18 @@ class RegisteredTaskViewSet(viewsets.ModelViewSet):
 
 class ProcessViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessSerializer
-    queryset = Process.objects.all()
+    queryset = Process.objects.all().order_by('-created_date')
 
     def create(self, request):
-        name = request.data.get('name')
-        payload = json.loads(request.data.get('payload', {}))
-        definition = ProcessDefinition.objects.get(name=name)
+        template = request.data.get('template')
+        payload = request.data.get('payload', {})
+        if not isinstance(payload, dict):
+            payload = json.loads(payload)
+        definition = get_object_or_404(ProcessDefinition, slug=template)
         process = Process.from_definition(definition, ["1"], payload)
-        import ipdb;ipdb.set_trace()
         process.run()
         result = ProcessSerializer(process).data
-        return response.JSONResponse(result)
+        return response.Response(result, status=201)
 
 class TaskViewSet(viewsets.ViewSet):
     """
@@ -64,6 +66,7 @@ class TaskViewSet(viewsets.ViewSet):
         """
         task = request.data.get('task')
         data = request.data.get('payload')
+        print(request.data)
         result = call_method_from_string(task, data)
         return response.Response(result)
 

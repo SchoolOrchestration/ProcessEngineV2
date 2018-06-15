@@ -24,7 +24,8 @@ export default {
       items: [
         { title: 'Processes', to: '/processes' },
         { title: 'Registered Tasks', to: '/tasks' },
-        { title: 'Discover Tasks', to: '/discover' }
+        { title: 'Discover Tasks', to: '/discover' },
+        { title: 'Monitor', to: '/monitor' }
       ]
     }
   }

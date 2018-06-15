@@ -26,4 +26,4 @@ def slack_message(payload):
     pass
 
 def ping(payload):
-    return {"message": "pong"}
+    return payload

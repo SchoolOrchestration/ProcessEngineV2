@@ -15,7 +15,7 @@ Other runners we might have:
 '''
 TASK_RUNNERS = [
     ('api.tasks.runners.http_task_runner', 'Trigger a task over HTTP'),
-    ('api.tasks.runners.local_task_runner', 'Call a locally available task'),
+    # ('api.tasks.runners.local_task_runner', 'Call a locally available task'),
 ]
 
 TASK_STATUSES = [
@@ -38,6 +38,9 @@ class RegisteredService(models.Model):
     Exposed tasks from registered services can be discovered and made into
     registered tasks for this process engine
     '''
+    def __str__(self):
+        return self.name
+
     name = models.CharField(max_length=255, help_text='This is the formal name of the test that will be called')
     base_url = models.URLField(blank=True, null=True, help_text='The internal base url where this service can be found')
     channel = models.CharField(max_length=255, blank=True, null=True, help_text='A channel on which this service is listening')
@@ -48,11 +51,12 @@ class RegisteredTask(models.Model):
     Registered tasks attacked to a ProcessDefinition are used to
     '''
     def __str__(self):
-        return "{}.{}".format(self.service, self.name)
+        return "{}:{}".format(self.service, self.method_to_call)
 
     service = models.CharField(max_length=255, blank=True, null=True, help_text='This is downstream service to call')
-    name = models.CharField(max_length=255, blank=True, null=True, help_text='This is the formal name of the test that will be called')
     friendly_name = models.CharField(max_length=255, blank=True, null=True)
+    method_to_call = models.CharField(max_length=255, blank=True, null=True, help_text='Full path to the method to call. e.g.: `api.tasks.ping`')
+
     registered_runners = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='A list of the runners available for this task')
     production_status = models.CharField(max_length=10, choices=REGISTERED_TASK_STATUSES, default='alpha')
     docs = models.TextField(blank=True, null=True, help_text='Markdown is supported')
@@ -63,6 +67,8 @@ class ProcessDefinition(models.Model):
     '''
     This is where you can define how a process will act
     '''
+    def __str__(self):
+        return "{} ()".format(self.name, self.version)
 
     object_ids = ArrayField(models.CharField(max_length=100), default=[], db_index=True)
 
@@ -102,6 +108,9 @@ class Process(models.Model):
     POST /process/:version/ --data-binary '{ "name": ..., payload: {} }'
     '''
 
+    def __str__(self):
+        return "Instance of: {}".format(self.definition)
+
     owners = ArrayField(models.CharField(max_length=100), default=[], db_index=True, help_text='object keys for objects that are allowed to act on this process')
     object_ids = ArrayField(models.CharField(max_length=100), default=[], db_index=True)
 
@@ -139,6 +148,9 @@ class Task(models.Model):
     '''
     A work item to be performed
     '''
+    def __str__(self):
+        return "[{}] {}: {}".format(self.definition, self.service, self.method_name)
+
     process = models.ForeignKey(Process, blank=True, null=True, on_delete=models.CASCADE)
     definition = models.ForeignKey(RegisteredTask, on_delete=models.SET_NULL, null=True)
     service = models.CharField(max_length=100, help_text='This is downstream service to call')
@@ -179,10 +191,13 @@ class Task(models.Model):
         instance.process = process
         instance.definition = task_template.registered_task
         instance.service = task_template.registered_task.service
-        instance.method_name = task_template.registered_task.name
+        instance.method_name = task_template.registered_task.method_to_call
         instance.runner = task_template.runner
 
-        template = Template(task_template.payload_template)
+        template_string = task_template.payload_template
+        if not isinstance(template_string, str):
+            template_string = json.dumps(template_string)
+        template = Template(template_string)
         rendered_payload = template.render(context=Context(process.payload))
 
         instance.payload = json.loads(rendered_payload)
@@ -206,8 +221,13 @@ class Result(models.Model):
         instance.is_success_response = result.ok
         if result.ok:
             instance.response = result.json()
-        # else:
-        #     instance.response = result.content
+        else:
+            try:
+                instance.response = result.json()
+            except json.decoder.JSONDecodeError:
+                instance.response = {
+                    "error": result.content.decode("utf-8")
+                }
         instance.response_code = result.status_code
 
         if with_save: instance.save()
