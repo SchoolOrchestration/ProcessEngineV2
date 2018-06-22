@@ -13,7 +13,8 @@ DATABASES = {
 # a list of modules containing tasks that
 # can be exposed
 ALLOWED_TASK_MODULES = {
-    'api.tasks.tasks'
+    'api.tasks.tasks',
+    'taskengine.tasks'
 }
 PROCESS_REGISTRY_URL = 'http://localhost'
 

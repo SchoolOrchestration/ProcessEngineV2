@@ -2,10 +2,14 @@
 <v-app>
   <!-- <v-navigation-drawer app></v-navigation-drawer> -->
   <v-toolbar color='primary' app dark dense flat>
-    <v-toolbar-title>Process Engine</v-toolbar-title>
+    <v-toolbar-title >
+      <v-btn to='/' icon ><v-icon>home</v-icon></v-btn>
+      Process Engine</v-toolbar-title>
     <v-toolbar-items class="ml-4 hidden-sm-and-down">
       <v-btn v-for='(item, i) in items' :key='i' :to='item.to' flat>{{item.title}}</v-btn>
     </v-toolbar-items>
+    <v-spacer></v-spacer>
+    <v-btn flat ><v-icon>play_arrow</v-icon> New Process</v-btn>
   </v-toolbar>
   <v-content>
     <v-container >

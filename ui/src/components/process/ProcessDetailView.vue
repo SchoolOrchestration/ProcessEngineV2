@@ -10,7 +10,6 @@
 
   <v-expansion-panel popout dark class='mt-3' >
     <v-expansion-panel-content v-for='task in process.task_set' :key='task.id' >
-
         <v-list-tile slot='header' >
           <v-list-tile-action-text>
             <v-avatar :size='32' color="teal" class='ma-1'>
@@ -18,7 +17,7 @@
             </v-avatar>
           </v-list-tile-action-text>
           <v-list-tile-content>
-            <v-list-tile-title>{{task.service}}.{{task.method_name}}</v-list-tile-title>
+            <v-list-tile-title>{{task.name}}. {{task.service}}.{{task.method_name}}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
@@ -28,15 +27,13 @@
           <code class='block pa-2' >{{task.payload}}</code>
 
           <v-subheader>Result</v-subheader>
-          <code v-for='result in task.result_set' :key='task.id' class='block pa-2' >
+          <code v-for='result in task.result_set' :key='result.id' class='block pa-2' >
             {{result.response}}
           </code>
         </v-card-text>
       </v-card>
     </v-expansion-panel-content>
   </v-expansion-panel>
-
-</v-card>
 </section>
 </template>
 

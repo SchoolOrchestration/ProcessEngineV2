@@ -16,10 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from api.api import router
+from taskengine.api import router as task_router
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+
+handler500 = 'rest_framework.exceptions.server_error'
+handler400 = 'rest_framework.exceptions.bad_request'
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -41,5 +45,6 @@ urlpatterns = [
     path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
     path(r'redoc/', schema_view.with_ui('redoc', cache_timeout=None), name='schema-redoc'),
     path(r'', include(router.urls)),
+    path(r'', include(task_router.urls)),
     path(r'api-auth/', include('rest_framework.urls'))
 ]

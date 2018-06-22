@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (
     ProcessDefinition,
+    RegisteredService,
     RegisteredTask,
     ProcessTask,
     Process,
@@ -19,8 +20,10 @@ class TaskInline(admin.TabularInline):
 class ProcessAdmin(admin.ModelAdmin):
     inlines = [TaskInline,]
 
+admin.site.register(RegisteredService)
+admin.site.register(RegisteredTask)
+
 admin.site.register(ProcessDefinition, ProcessDefinitionAdmin)
 admin.site.register(Process, ProcessAdmin)
-admin.site.register(RegisteredTask)
 admin.site.register(ProcessTask)
 admin.site.register(Task)

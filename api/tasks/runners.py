@@ -11,8 +11,9 @@ def http_task_runner(task):
         "payload": task.payload
     }
     result = requests.post(url, json=data)
-    success = result.status_code < 300
+    success = result.ok
     return (result, success)
 
 def call(runner, task):
     return call_method_from_string(runner, task)
+

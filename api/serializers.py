@@ -10,6 +10,15 @@ from .models import (
     Task,
     Result
 )
+from django.contrib.auth import get_user_model
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = '__all__'
+        exclude_fields = ('password',)
+
 
 class RegisteredTaskSerializer(serializers.ModelSerializer):
     """Simple serializer for professions"""
@@ -27,7 +36,7 @@ class ProcessTaskSerializer(serializers.ModelSerializer):
 
 class ProcessDefinitionSerializer(serializers.ModelSerializer):
     """Simple serializer for professions"""
-    task = ProcessTaskSerializer(source='processtask_set', read_only=True, many=True)
+    tasks = ProcessTaskSerializer(source='processtask_set', read_only=True, many=True)
     class Meta:
         model = ProcessDefinition
         fields = '__all__'

@@ -5,8 +5,8 @@ from django.urls import reverse
 from django.test import TestCase
 import json
 from .testutils import (
-    create_fake_definition,
-    create_fake_definition_with_processes
+    create_fake_definition_with_processes,
+    create_fake_user
 )
 
 class ProcessCreateTestCase(TestCase):
@@ -24,6 +24,15 @@ class ProcessCreateTestCase(TestCase):
         result = self.client.post(self.url, self.data, format='json')
         assert result.status_code == 201,\
             'Expected 201. Got: {}'.format(result.status_code)
+
+    def test_create_logged_in_user_adds_user_data_to_process(self):
+        user = create_fake_user()
+        self.client.login(username=user.username, password="testtest")
+        result = self.client.post(self.url, self.data, format='json')
+
+        actual_username = result.json().get('actor', {}).get('username')
+        assert actual_username == user.username,\
+            'Expected username to be: {} got: {}'.format(actual_username, user.username)
 
     def test_will_404_if_not_existing_template(self):
         data = {

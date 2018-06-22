@@ -22,14 +22,19 @@ class RunTaskTestCase(TestCase):
 
     def setUp(self):
         data = {
-            'task': 'api.tasks.tasks.ping'
+            'task': 'api.tasks.tasks.ping',
+            'payload': {
+                'message': 'pong'
+            }
         }
         url = reverse('task-list')
         self.result = self.client.post(url, data)
 
     def test_call_method_from_string(self):
-
-        result = call_method_from_string('api.tasks.tasks.ping')
+        data = {
+            'message': 'pong'
+        }
+        result = call_method_from_string('api.tasks.tasks.ping', payload=data)
         assert result.get("message") == "pong"
 
     def test_invoke_method_over_http(self):

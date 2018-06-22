@@ -1,11 +1,12 @@
 django==2
 djangorestframework==3.8.2
 gunicorn
-psycopg2
+psycopg2-binary
 requests
 django-storages
 boto
 requests
+python-dateutil
 
 responses
 ipdb
@@ -16,3 +17,5 @@ drf-yasg
 drf-yasg[validation]
 # temp:
 django-cors-headers
+jsonschema
+faker

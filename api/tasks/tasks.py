@@ -19,11 +19,9 @@ def make_http_request(payload):
     """
     pass
 
-def slack_message(payload):
-    """
-    Send a message in slack
-    """
-    pass
-
 def ping(payload):
+    return payload
+
+def todo(payload):
+    '''A placeholder task. Use it to define processes with tasks that don't exist yet'''
     return payload
