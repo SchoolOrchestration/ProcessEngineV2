@@ -2,6 +2,7 @@
 from rest_framework import routers, viewsets, response, exceptions
 from django.conf import settings
 import importlib
+from rest_framework import permissions
 
 def call_method_from_string(method_string, payload = None):
     '''
@@ -26,11 +27,23 @@ def get_tasks_by_module_string(module_string):
             })
     return tasks
 
+class APIKeyPermission(permissions.BasePermission):
+    message = 'Access denied.'
+
+    def has_permission(self, request, view):
+        api_key = getattr(settings, 'TASKENGINE_API_KEY', None)
+        if api_key is not None:
+            # verfiy correct api key was sent
+            # if request.META.get('AUTHORIZATION').lower() == 'bearer {}'.format()
+            print(request.META.get('AUTHORIZATION'))
+        return True
+
 class TaskViewSet(viewsets.ViewSet):
     """
     Viewset for upstream microservices which exposes tasks
     over API (not intended to be available outside the internal network)
     """
+    permission_classes = [APIKeyPermission,]
 
     def list(self, request):
         all_tasks = []
