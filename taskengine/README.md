@@ -28,6 +28,10 @@ ALLOWED_TASK_MODULES = {
     'taskengine.tasks', # these are default tasks provided by taskengine
     .., # <- your module/s here
 }
+
+# optional
+TASKENGINE_API_KEY = '...'
+
 ```
 
 **Add API to urls**

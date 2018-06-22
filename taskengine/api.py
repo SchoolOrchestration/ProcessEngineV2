@@ -33,9 +33,7 @@ class APIKeyPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         api_key = getattr(settings, 'TASKENGINE_API_KEY', None)
         if api_key is not None:
-            # verfiy correct api key was sent
-            # if request.META.get('AUTHORIZATION').lower() == 'bearer {}'.format()
-            print(request.META.get('AUTHORIZATION'))
+            return request.META.get('Authorization', '').lower() == 'bearer {}'.format(api_key)
         return True
 
 class TaskViewSet(viewsets.ViewSet):
