@@ -47,7 +47,7 @@ class RegisteredService(models.Model):
         return self.name
 
     name = models.CharField(max_length=255, help_text='This is the formal name of the test that will be called')
-    base_url = models.URLField(blank=True, null=True, help_text='The internal base url where this service can be found')
+    base_url = models.CharField(max_length=255, blank=True, null=True, help_text='The internal base url where this service can be found')
     api_key = models.CharField(max_length=255, blank=True, null=True, help_text='If your task endpoint requires an API key, specify it here. API key can be sent via params or Authorization Bearer')
     channel = models.CharField(max_length=255, blank=True, null=True, help_text='A channel on which this service is listening')
 

@@ -14,18 +14,24 @@ from .helpers import (
 from .serializers import (
     ProcessSerializer,
     ProcessDefinitionSerializer,
+    RegisteredServiceSerializer,
     RegisteredTaskSerializer,
     UserSerializer
 )
 from .models import (
     Process,
     ProcessDefinition,
+    RegisteredService,
     RegisteredTask
 )
 
 class ProcessDefinitionViewSet(viewsets.ModelViewSet):
     serializer_class = ProcessDefinitionSerializer
     queryset = ProcessDefinition.objects.all()
+
+class RegisteredServiceViewSet(viewsets.ModelViewSet):
+    serializer_class = RegisteredServiceSerializer
+    queryset = RegisteredService.objects.all()
 
 
 class RegisteredTaskViewSet(viewsets.ModelViewSet):
@@ -75,5 +81,6 @@ class ProcessViewSet(viewsets.ModelViewSet):
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'process-definitions', ProcessDefinitionViewSet)
+router.register(r'registered-services', RegisteredServiceViewSet)
 router.register(r'registered-tasks', RegisteredTaskViewSet)
 router.register(r'process', ProcessViewSet)

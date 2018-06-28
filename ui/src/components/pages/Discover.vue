@@ -12,11 +12,16 @@
       <v-toolbar >
         <v-toolbar-title>Find available tasks</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-select :items='items' label='Choose a service' ></v-select>
+        <v-select
+          item-text="name"
+          return-object
+          :items='services'
+          label='Choose a service' ></v-select>
         <!-- <v-text-field label='Search' >
         </v-text-field> -->
       </v-toolbar>
     </v-layout>
+    <pre>{{services}}</pre>
 </v-container>
 </template>
 
@@ -25,10 +30,11 @@ export default {
   name: 'Discover',
   data () {
     return {
-      items: [
-        'localhost'
-      ]
+      services: []
     }
+  },
+  mounted () {
+    this.$api().services.list()
   }
 }
 </script>

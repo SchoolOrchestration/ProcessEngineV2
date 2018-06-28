@@ -6,6 +6,7 @@ from .models import (
     Process,
     ProcessDefinition,
     ProcessTask,
+    RegisteredService,
     RegisteredTask,
     Task,
     Result
@@ -19,6 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
         exclude_fields = ('password',)
 
+
+class RegisteredServiceSerializer(serializers.ModelSerializer):
+    """Simple serializer for professions"""
+    class Meta:
+        model = RegisteredService
+        fields = '__all__'
 
 class RegisteredTaskSerializer(serializers.ModelSerializer):
     """Simple serializer for professions"""
