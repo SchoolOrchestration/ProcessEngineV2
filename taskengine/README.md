@@ -54,4 +54,14 @@ urlpatterns = [
 python manage.py register
 ```
 
+## Upading pip library
+
+```
+# update version in setup.py
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+```
+
+todo: dockerize this
+
 
